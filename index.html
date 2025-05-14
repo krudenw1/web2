@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>멀티 채널 HLS 플레이어</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .channels {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .channel-btn {
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .channel-btn:hover {
+            background-color: #45a049;
+        }
+        .player-container {
+            width: 100%;
+            margin: 0 auto;
+            background-color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        #videoPlayer {
+            width: 100%;
+            max-height: 70vh;
+            display: block;
+        }
+        .current-channel {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>멀티 채널 HLS 플레이어</h1>
+        
+        <div class="channels">
+            <button class="channel-btn" onclick="playChannel('https://kbo01-skcdn.tving.com/kbosll/live5000.smil/playlist.m3u8?Policy=eyJTdGF0ZW1lbnQiOiBbeyJSZXNvdXJjZSI6Iio6Ly8qLnR2aW5nLmNvbS8qIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNzQ3MjE4NDM4fSwiSXBBZGRyZXNzIjp7IkFXUzpTb3VyY2VJcCI6IjAuMC4wLjAvMCJ9fX1dfQ__&Signature=YrmvOc3c0V~dkcrJZX~uFbP969kJNTwLmyu~73OujyM8HjrnnLlT2nbfYbT1geaZ0BcfLIXDM0995zjHSrBtfbWCaDn85yyvez41oLSs2KM58kLMvXSwhOxDHa-hINyZSECUNRJCb0pAOw9DYb6VDXSa8l6m3HGwBAfpfXhytB3j5VkJg4aYiz~UthljPw-INAdsMaN8kqQFYBBtgW-wJd9gqDzBMSD5CShPdrbolgdJP2s3iYK0Jr-6CkGwIl9hCIqOKbIrhxSgh35G37Z8Rd7IsrmOYb45Bu3fg8Bm7txyuZR5EGTz3PNIQQ0mMPiplYatt1qHCietdWbbsztP9w__&Key-Pair-Id=APKAIXCIJCFRGOUEZDWA&pf=edge_2.16.7_hlsjs&xr=144', 1)">1채널</button>
+            <button class="channel-btn" onclick="playChannel('https://kbo02-skcdn.tving.com/kbosll/live5000.smil/playlist.m3u8?Policy=eyJTdGF0ZW1lbnQiOiBbeyJSZXNvdXJjZSI6Iio6Ly8qLnR2aW5nLmNvbS8qIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNzQ3MjE4NDM4fSwiSXBBZGRyZXNzIjp7IkFXUzpTb3VyY2VJcCI6IjAuMC4wLjAvMCJ9fX1dfQ__&Signature=YrmvOc3c0V~dkcrJZX~uFbP969kJNTwLmyu~73OujyM8HjrnnLlT2nbfYbT1geaZ0BcfLIXDM0995zjHSrBtfbWCaDn85yyvez41oLSs2KM58kLMvXSwhOxDHa-hINyZSECUNRJCb0pAOw9DYb6VDXSa8l6m3HGwBAfpfXhytB3j5VkJg4aYiz~UthljPw-INAdsMaN8kqQFYBBtgW-wJd9gqDzBMSD5CShPdrbolgdJP2s3iYK0Jr-6CkGwIl9hCIqOKbIrhxSgh35G37Z8Rd7IsrmOYb45Bu3fg8Bm7txyuZR5EGTz3PNIQQ0mMPiplYatt1qHCietdWbbsztP9w__&Key-Pair-Id=APKAIXCIJCFRGOUEZDWA&pf=edge_2.16.7_hlsjs&xr=144', 2)">2채널</button>
+            <button class="channel-btn" onclick="playChannel('https://kbo03-skcdn.tving.com/kbosll/live5000.smil/playlist.m3u8?Policy=eyJTdGF0ZW1lbnQiOiBbeyJSZXNvdXJjZSI6Iio6Ly8qLnR2aW5nLmNvbS8qIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNzQ3MjE4NDM4fSwiSXBBZGRyZXNzIjp7IkFXUzpTb3VyY2VJcCI6IjAuMC4wLjAvMCJ9fX1dfQ__&Signature=YrmvOc3c0V~dkcrJZX~uFbP969kJNTwLmyu~73OujyM8HjrnnLlT2nbfYbT1geaZ0BcfLIXDM0995zjHSrBtfbWCaDn85yyvez41oLSs2KM58kLMvXSwhOxDHa-hINyZSECUNRJCb0pAOw9DYb6VDXSa8l6m3HGwBAfpfXhytB3j5VkJg4aYiz~UthljPw-INAdsMaN8kqQFYBBtgW-wJd9gqDzBMSD5CShPdrbolgdJP2s3iYK0Jr-6CkGwIl9hCIqOKbIrhxSgh35G37Z8Rd7IsrmOYb45Bu3fg8Bm7txyuZR5EGTz3PNIQQ0mMPiplYatt1qHCietdWbbsztP9w__&Key-Pair-Id=APKAIXCIJCFRGOUEZDWA&pf=edge_2.16.7_hlsjs&xr=144', 3)">3채널</button>
+            <button class="channel-btn" onclick="playChannel('https://kbo04-skcdn.tving.com/kbosll/live5000.smil/playlist.m3u8?Policy=eyJTdGF0ZW1lbnQiOiBbeyJSZXNvdXJjZSI6Iio6Ly8qLnR2aW5nLmNvbS8qIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNzQ3MjE4NDM4fSwiSXBBZGRyZXNzIjp7IkFXUzpTb3VyY2VJcCI6IjAuMC4wLjAvMCJ9fX1dfQ__&Signature=YrmvOc3c0V~dkcrJZX~uFbP969kJNTwLmyu~73OujyM8HjrnnLlT2nbfYbT1geaZ0BcfLIXDM0995zjHSrBtfbWCaDn85yyvez41oLSs2KM58kLMvXSwhOxDHa-hINyZSECUNRJCb0pAOw9DYb6VDXSa8l6m3HGwBAfpfXhytB3j5VkJg4aYiz~UthljPw-INAdsMaN8kqQFYBBtgW-wJd9gqDzBMSD5CShPdrbolgdJP2s3iYK0Jr-6CkGwIl9hCIqOKbIrhxSgh35G37Z8Rd7IsrmOYb45Bu3fg8Bm7txyuZR5EGTz3PNIQQ0mMPiplYatt1qHCietdWbbsztP9w__&Key-Pair-Id=APKAIXCIJCFRGOUEZDWA&pf=edge_2.16.7_hlsjs&xr=144', 4)">4채널</button>
+            <button class="channel-btn" onclick="playChannel('https://kbo05-skcdn.tving.com/kbosll/live5000.smil/playlist.m3u8?Policy=eyJTdGF0ZW1lbnQiOiBbeyJSZXNvdXJjZSI6Iio6Ly8qLnR2aW5nLmNvbS8qIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNzQ3MjE4NDM4fSwiSXBBZGRyZXNzIjp7IkFXUzpTb3VyY2VJcCI6IjAuMC4wLjAvMCJ9fX1dfQ__&Signature=YrmvOc3c0V~dkcrJZX~uFbP969kJNTwLmyu~73OujyM8HjrnnLlT2nbfYbT1geaZ0BcfLIXDM0995zjHSrBtfbWCaDn85yyvez41oLSs2KM58kLMvXSwhOxDHa-hINyZSECUNRJCb0pAOw9DYb6VDXSa8l6m3HGwBAfpfXhytB3j5VkJg4aYiz~UthljPw-INAdsMaN8kqQFYBBtgW-wJd9gqDzBMSD5CShPdrbolgdJP2s3iYK0Jr-6CkGwIl9hCIqOKbIrhxSgh35G37Z8Rd7IsrmOYb45Bu3fg8Bm7txyuZR5EGTz3PNIQQ0mMPiplYatt1qHCietdWbbsztP9w__&Key-Pair-Id=APKAIXCIJCFRGOUEZDWA&pf=edge_2.16.7_hlsjs&xr=144', 5)">5채널</button>
+        </div>
+        
+        <div class="current-channel" id="channelInfo">채널을 선택해주세요</div>
+        
+        <div class="player-container">
+            <video id="videoPlayer" controls></video>
+        </div>
+    </div>
+
+    <script>
+        // HLS 플레이어 초기화
+        var video = document.getElementById('videoPlayer');
+		   // HLS.js 설정 - CORS 문제 해결을 위한 설정 추가
+    var hlsConfig = {
+        xhrSetup: function(xhr) {
+            xhr.withCredentials = false; // CORS 요청에 자격 증명 포함 안 함
+        }
+    };
+        var hls = new Hls();
+        
+        // 채널 재생 함수
+        function playChannel(url, channelNumber) {
+            if (Hls.isSupported()) {
+                hls.loadSource(url);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    video.play();
+                });
+                
+                // 현재 재생 중인 채널 표시
+                document.getElementById('channelInfo').textContent = '현재 재생 중: ' + channelNumber + '채널';
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // iOS Safari에서 네이티브 HLS 지원 사용
+                video.src = url;
+                video.addEventListener('loadedmetadata', function() {
+                    video.play();
+                });
+                document.getElementById('channelInfo').textContent = '현재 재생 중: ' + channelNumber + '채널';
+            } else {
+                alert('이 브라우저는 HLS 스트리밍을 지원하지 않습니다.');
+            }
+        }
+        
+        // 페이지 로드 시 오류 처리
+        hls.on(Hls.Events.ERROR, function(event, data) {
+            if (data.fatal) {
+                switch(data.type) {
+                    case Hls.ErrorTypes.NETWORK_ERROR:
+                        console.error('네트워크 오류가 발생했습니다');
+                        hls.startLoad();
+                        break;
+                    case Hls.ErrorTypes.MEDIA_ERROR:
+                        console.error('미디어 오류가 발생했습니다');
+                        hls.recoverMediaError();
+                        break;
+                    default:
+                        console.error('복구할 수 없는 오류가 발생했습니다');
+                        break;
+                }
+            }
+        });
+        
+        // 페이지 로드 시 자동으로 첫 번째 채널 재생 (선택 사항)
+        // window.onload = function() {
+        //     playChannel('https://bitl.to/4WNC', 1);
+        // };
+    </script>
+</body>
+</html>
